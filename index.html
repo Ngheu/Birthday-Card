@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thiệp Sinh Nhật</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ffe0ee 0%,#ffc2dd 40%,#d4b8ff 100%);
+  font-family:'Nunito',sans-serif;
+  overflow:hidden;
+}
+
+.scene{
+  perspective:2200px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.book-container{
+  position:relative;
+  height:500px;
+  width:680px;
+  overflow:hidden;
+  border-radius:18px;
+  box-shadow:none;
+}
+
+.book-container.open{
+  overflow:visible;
+  box-shadow:0 20px 60px rgba(180,50,120,0.35);
+}
+
+/* Trang lời chúc bên phải */
+.inner-spread{
+  position:absolute;
+  inset:0;
+  width:680px;
+  height:500px;
+  display:flex;
+  justify-content:flex-end;
+  border-radius:18px;
+  overflow:hidden;
+  z-index:1;
+}
+
+.inner-right{
+  width:340px;
+  height:500px;
+  background:linear-gradient(160deg,#fff0f6 0%,#ffd6eb 60%,#ffbfdf 100%);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  padding:28px 16px;
+  box-shadow: inset 0 0 20px rgba(255,105,180,0.2);
+}
+
+.inner-right::before{
+  content:'';position:absolute;left:0;top:0;width:22px;height:100%;
+  background:linear-gradient(to right,rgba(0,0,0,0.08),transparent);
+  z-index:1;pointer-events:none;
+}
+
+.border-chars{position:absolute;inset:0;pointer-events:none;z-index:2;}
+.border-chars span{position:absolute;font-size:10px;opacity:0.45;line-height:1;}
+
+.inner-right .page-content{position:relative;z-index:3;text-align:center;width:100%;}
+.inner-right h2{font-family:'Pacifico',cursive;color:#cc2277;font-size:17px;line-height:1.5;text-shadow:1px 2px 8px rgba(255,80,150,0.3);margin-bottom:14px;}
+.message{line-height:1.85;color:#993366;opacity:0;transform:translateY(30px);transition:opacity 1.2s 0.6s, transform 1.2s 0.6s;}
+.book-container.open .message{opacity:1;transform:translateY(0)}
+.message p{margin-bottom:9px;font-size:12.5px;}
+
+/* Bìa */
+.cover-flap{
+  position:absolute;
+  left:340px; top:0;
+  width:340px; height:500px;
+  transform-origin:left center;
+  transform-style:preserve-3d;
+  transition:transform 1.3s cubic-bezier(0.65,0,0.2,1.1);
+  cursor:pointer;
+  z-index:20;
+  border-radius:18px;
+}
+
+.book-container.open .cover-flap{
+  transform:rotateY(179deg);
+  border-radius:0 18px 18px 0;
+}
+
+.cover-front, .cover-back{
+  position:absolute; inset:0;
+  background:linear-gradient(155deg,#ff9ecf 0%,#ff5fa0 55%,#e0449a 100%);
+  border-radius:18px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.cover-back{
+  transform:rotateY(180deg);
+  z-index:-1;
+}
+
+/* Xóa dòng chữ dưới cùng ở mặt bìa */
+.cover-front .front-title{
+  font-family:'Pacifico',cursive;
+  font-size:30px;
+  text-shadow:2px 3px 10px rgba(0,0,0,0.25);
+  z-index:2;
+  text-align:center;
+  padding:0 24px;
+}
+
+/* Ẩn hint-pulse cũ vì đã xóa dòng chữ dưới */
+.hint-pulse { display: none; }
+
+/* Icon to lộn xộn ẩn dưới mép thiệp */
+.decor-icon {
+  position: absolute;
+  font-size: 80px; /* to */
+  opacity: 0.9;
+  z-index: 1; /* dưới chữ nhưng vẫn thấy */
+  pointer-events: none;
+}
+
+/* Mũ rơi */
+.hat-wrapper{
+  position:absolute;top:-48px;right:-28px;z-index:30;
+  animation:wobble 2s ease-in-out infinite;
+  filter:drop-shadow(3px 7px 10px rgba(0,0,0,0.3));
+}
+.hat-wrapper.falling{animation:fall 1.4s cubic-bezier(0.4,0,1,1) forwards;}
+@keyframes wobble{0%,100%{transform:rotateZ(-10deg) rotateX(15deg) translateY(0)}50%{transform:rotateZ(10deg) rotateX(-6deg) translateY(-7px)}}
+@keyframes fall{0%{transform:rotateZ(0) translateY(0);opacity:1}25%{transform:rotateZ(28deg) translateY(70px) translateX(30px)}65%{transform:rotateZ(58deg) translateY(280px) translateX(120px)}100%{transform:rotateZ(85deg) translateY(750px) translateX(200px);opacity:0}}
+
+.decor{position:fixed;pointer-events:none;animation:floatUp 7s linear forwards;z-index:900;bottom:-20px;}
+@keyframes floatUp{0%{transform:translateY(0) scale(0.4) rotate(-10deg);opacity:0.9}20%{opacity:1}100%{transform:translateY(-110vh) scale(1.5) rotate(20deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="book-container" id="bookContainer">
+
+    <div class="inner-spread">
+      <div class="inner-right">
+        <div class="border-chars" id="borderChars"></div>
+        <div class="page-content">
+          <h2>SNVV Nghen💕</h2>
+          <div class="message">
+            <p>Chúc em có một ngày sinh nhật thật là vui vẻ✨</p>
+            <p>Mong rằng em sẽ học thật giỏi và đạt được những điều mà mình mong muốn 🎓</p>
+            <p>Luôn xinh xắn, tự tin và đáng yêu nhá 💖</p>
+            <p>Chúc em snvv nghen🎉🎂</p>
+            <p style="margin-top:12px;font-family:'Pacifico',cursive;color:#cc2277;font-size:15px;">Happy Birthday! 🥳</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-flap" id="coverFlap" onclick="toggleCard()">
+
+      <div class="cover-front">
+        <!-- Icon lộn xộn to, ẩn dưới mép -->
+        <span class="decor-icon" style="top:10%;left:15%;transform:rotate(-25deg);">🐱</span>
+        <span class="decor-icon" style="top:25%;left:70%;transform:rotate(35deg);">🎂</span>
+        <span class="decor-icon" style="top:60%;left:20%;transform:rotate(-15deg);">🎩</span>
+        <span class="decor-icon" style="top:75%;left:80%;transform:rotate(20deg);">🎀</span>
+        <span class="decor-icon" style="top:40%;left:85%;transform:rotate(-40deg);">🐱</span>
+        <span class="decor-icon" style="top:80%;left:30%;transform:rotate(30deg);">🎂</span>
+
+        <div class="front-title">🎂 Happy Birthday 🎀</div>
+      </div>
+
+      <div class="cover-back">
+        <!-- Icon lộn xộn cho mặt trong (dù ẩn nhưng vẫn có thể thấy khi lật hoàn toàn) -->
+        <span class="decor-icon" style="top:15%;left:10%;transform:rotate(45deg);">🐱</span>
+        <span class="decor-icon" style="top:30%;left:75%;transform:rotate(-30deg);">🎂</span>
+        <span class="decor-icon" style="top:65%;left:25%;transform:rotate(15deg);">🎩</span>
+        <span class="decor-icon" style="top:70%;left:85%;transform:rotate(-20deg);">🎀</span>
+      </div>
+
+      <div class="hat-wrapper" id="hat">
+        <svg width="80" viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff85c8"/>
+              <stop offset="100%" style="stop-color:#bb0060"/>
+            </linearGradient>
+            <linearGradient id="hg2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff5fab"/>
+              <stop offset="100%" style="stop-color:#990055"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="50" cy="119" rx="40" ry="5" fill="rgba(0,0,0,0.14)"/>
+          <polygon points="50,2 8,113 92,113" fill="url(#hg)"/>
+          <polygon points="50,2 30,90 50,85" fill="rgba(255,255,255,0.18)"/>
+          <line x1="50" y1="2" x2="22" y2="92" stroke="white" stroke-width="3" stroke-dasharray="7,7" opacity="0.45"/>
+          <line x1="50" y1="2" x2="50" y2="113" stroke="white" stroke-width="3" stroke-dasharray="7,7" opacity="0.45"/>
+          <line x1="50" y1="2" x2="78" y2="92" stroke="white" stroke-width="3" stroke-dasharray="7,7" opacity="0.45"/>
+          <text x="26" y="68" font-size="16" fill="white" opacity="0.9">★</text>
+          <text x="60" y="85" font-size="11" fill="white" opacity="0.8">★</text>
+          <text x="40" y="48" font-size="9" fill="white" opacity="0.7">✦</text>
+          <ellipse cx="50" cy="113" rx="44" ry="11" fill="url(#hg2)"/>
+          <ellipse cx="50" cy="110" rx="38" ry="7" fill="rgba(255,255,255,0.15)"/>
+          <circle cx="50" cy="9" r="9" fill="#ffe566" stroke="#ffaa00" stroke-width="2"/>
+          <circle cx="47" cy="6" r="3" fill="rgba(255,255,255,0.5)"/>
+          <rect x="20" y="100" width="60" height="9" rx="3" fill="rgba(255,255,255,0.22)"/>
+          <circle cx="35" cy="104" r="3" fill="#ffee88" opacity="0.8"/>
+          <circle cx="50" cy="104" r="3" fill="#88ffcc" opacity="0.8"/>
+          <circle cx="65" cy="104" r="3" fill="#ffaa88" opacity="0.8"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let isOpen = false;
+
+function toggleCard() {
+  const container = document.getElementById('bookContainer');
+  const hat = document.getElementById('hat');
+
+  isOpen = !isOpen;
+
+  if (isOpen) {
+    container.classList.add('open');
+    hat.classList.add('falling');
+    setTimeout(launchConfetti, 500);
+  } else {
+    container.classList.remove('open');
+    hat.classList.remove('falling');
+  }
+}
+
+// Border chars
+(function(){
+  const c = document.getElementById('borderChars');
+  const chars = ['🌸','💕','✨','🎀','🐱','💖','⭐','🎊','🌟','💗'];
+  const W=340, H=500, step=18, mg=8;
+  let pos=[];
+  for(let x=mg;x<W-mg;x+=step) pos.push({x,y:mg});
+  for(let x=mg;x<W-mg;x+=step) pos.push({x,y:H-mg});
+  for(let y=mg+step;y<H-mg;y+=step) pos.push({x:mg,y});
+  for(let y=mg+step;y<H-mg;y+=step) pos.push({x:W-mg,y});
+  pos.forEach((p,i)=>{
+    const s=document.createElement('span');
+    s.textContent=chars[i%chars.length];
+    s.style.left=p.x+'px'; s.style.top=p.y+'px';
+    s.style.transform='translate(-50%,-50%)';
+    c.appendChild(s);
+  });
+})();
+
+// Confetti & decor giữ nguyên
+const confColors=['#ff6bae','#ff2277','#ffcc00','#ff8800','#00ccff','#aa55ff','#22ddee','#f472b6','#84cc16','#ff4455','#44aaff','#ff99cc'];
+
+let sty = document.createElement('style');
+sty.textContent = `
+@keyframes ribbonFall{0%{top:-50px;opacity:1;transform:rotate(var(--r0)) translateX(0) scaleY(1)}20%{transform:rotate(calc(var(--r0) + 120deg)) translateX(var(--dx1)) scaleY(0.5)}40%{transform:rotate(calc(var(--r0) + 240deg)) translateX(var(--dx2)) scaleY(1.3)}60%{transform:rotate(calc(var(--r0) + 400deg)) translateX(var(--dx1)) scaleY(0.7)}80%{transform:rotate(calc(var(--r0) + 560deg)) translateX(var(--dx2)) scaleY(1);opacity:1}100%{top:110vh;opacity:0;transform:rotate(calc(var(--r0) + 720deg)) translateX(var(--dx1)) scaleY(0.4)}}
+@keyframes circleFall{0%{top:-30px;opacity:1;transform:translateX(0) scale(1) rotate(0)}50%{transform:translateX(var(--dx1)) scale(1.2) rotate(180deg)}100%{top:110vh;opacity:0;transform:translateX(var(--dx2)) scale(0.4) rotate(360deg)}}`;
+document.head.appendChild(sty);
+
+function launchConfetti(){for(let i=0;i<200;i++) setTimeout(()=>spawnPiece(),i*12);}
+function spawnPiece(){
+  const el=document.createElement('div');
+  const color=confColors[Math.floor(Math.random()*confColors.length)];
+  const isRibbon=Math.random()>0.35;
+  const left=Math.random()*100,dur=2.6+Math.random()*2.6,delay=Math.random()*0.5;
+  const r0=Math.random()*360,dx1=((Math.random()-0.5)*100)+'px',dx2=((Math.random()-0.5)*140)+'px';
+  const w=isRibbon?(3+Math.random()*4)+'px':(7+Math.random()*9)+'px';
+  const h=isRibbon?(16+Math.random()*18)+'px':w;
+  el.style.cssText=`position:fixed;z-index:9999;pointer-events:none;left:${left}vw;top:-50px;width:${w};height:${h};background:${color};border-radius:${isRibbon?'2px':'50%'};--r0:${r0}deg;--dx1:${dx1};--dx2:${dx2};animation:${isRibbon?'ribbonFall':'circleFall'} ${dur}s ${delay}s ease-in forwards;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),(dur+delay+0.6)*1000);
+}
+
+const emojis=['💖','✨','🌸','🎀','🐱','🎂','💕','⭐','🎊'];
+function createDecor(){
+  const el=document.createElement('div');
+  el.classList.add('decor');
+  el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  el.style.left=Math.random()*100+'vw';
+  el.style.fontSize=(Math.random()*22+10)+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),7400);
+}
+setInterval(createDecor,750);
+</script>
+</body>
+</html>
