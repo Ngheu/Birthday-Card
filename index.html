@@ -16,27 +16,29 @@ body{
   background:linear-gradient(135deg,#ffe0ee 0%,#ffc2dd 40%,#d4b8ff 100%);
   font-family:'Nunito',sans-serif;
   overflow:hidden;
-  touch-action: manipulation; /* mượt hơn khi chạm trên mobile */
+  touch-action: manipulation;
 }
 
 .scene{
-  perspective:1800px; /* giảm perspective cho mobile mượt hơn */
+  perspective:1800px;
   width:100%;
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
+  padding:2vw;
 }
 
 .book-container{
   position:relative;
-  height:85vh; /* dùng vh để fit màn hình mobile */
-  width:90vw;  /* dùng vw để tự co giãn */
-  max-width:680px; /* giới hạn max trên desktop */
+  height:85vh;
+  width:90vw;
+  max-width:680px;
   max-height:500px;
   overflow:hidden;
-  border-radius:12px; /* giảm bo góc nhẹ cho mobile */
+  border-radius:12px;
   box-shadow:none;
+  background:transparent;
 }
 
 .book-container.open{
@@ -58,7 +60,7 @@ body{
 }
 
 .inner-right{
-  width:50%; /* chia đôi trên mobile, nhưng max 340px */
+  width:50%;
   max-width:340px;
   height:100%;
   background:linear-gradient(160deg,#fff0f6 0%,#ffd6eb 60%,#ffbfdf 100%);
@@ -69,7 +71,7 @@ body{
   position:relative;
   overflow:hidden;
   border-radius:12px;
-  padding:5vw 4vw;
+  padding:6vw 5vw;
   box-shadow: inset 0 0 15px rgba(255,105,180,0.15);
 }
 
@@ -80,22 +82,22 @@ body{
 }
 
 .border-chars{position:absolute;inset:0;pointer-events:none;z-index:2;}
-.border-chars span{position:absolute;font-size:3vw;opacity:0.45;line-height:1;}
+.border-chars span{position:absolute;font-size:3.5vw;opacity:0.45;line-height:1;}
 
 .inner-right .page-content{position:relative;z-index:3;text-align:center;width:100%;}
-.inner-right h2{font-family:'Pacifico',cursive;color:#cc2277;font-size:5vw;line-height:1.4;text-shadow:1px 2px 6px rgba(255,80,150,0.3);margin-bottom:3vw;}
-.message{line-height:1.8;color:#993366;opacity:0;transform:translateY(5vw);transition:opacity 1.2s 0.6s, transform 1.2s 0.6s;font-size:3.5vw;}
+.inner-right h2{font-family:'Pacifico',cursive;color:#cc2277;font-size:6vw;line-height:1.4;text-shadow:1px 2px 6px rgba(255,80,150,0.3);margin-bottom:4vw;}
+.message{line-height:1.8;color:#993366;opacity:0;transform:translateY(6vw);transition:opacity 1s 0.5s, transform 1s 0.5s;font-size:4vw;}
 .book-container.open .message{opacity:1;transform:translateY(0)}
-.message p{margin-bottom:2vw;}
+.message p{margin-bottom:3vw;}
 
-/* Bìa - responsive */
+/* Bìa */
 .cover-flap{
   position:absolute;
   left:50%; top:0;
   width:50%; height:100%;
   transform-origin:left center;
   transform-style:preserve-3d;
-  transition:transform 1.3s cubic-bezier(0.65,0,0.2,1.1);
+  transition:transform 1s cubic-bezier(0.65,0,0.2,1.1); /* giảm thời gian cho mobile nhanh hơn */
   cursor:pointer;
   z-index:20;
   border-radius:12px;
@@ -126,17 +128,17 @@ body{
 
 .cover-front .front-title{
   font-family:'Pacifico',cursive;
-  font-size:7vw;
+  font-size:8vw;
   text-shadow:2px 3px 10px rgba(0,0,0,0.25);
   z-index:2;
   text-align:center;
   padding:0 5vw;
 }
 
-/* Icon to lộn xộn - responsive */
+/* Icon lộn xộn - responsive */
 .decor-icon {
   position: absolute;
-  font-size: 12vw; /* to trên mobile */
+  font-size: 12vw;
   opacity: 0.9;
   z-index: 1;
   pointer-events: none;
@@ -144,25 +146,27 @@ body{
 
 /* Mũ rơi - responsive */
 .hat-wrapper{
-  position:absolute;top:-8vw;right:-5vw;z-index:30;
-  width:15vw;
+  position:absolute;top:-10vw;right:-6vw;z-index:30;
+  width:18vw;
   animation:wobble 2s ease-in-out infinite;
   filter:drop-shadow(3px 7px 10px rgba(0,0,0,0.3));
 }
 .hat-wrapper.falling{animation:fall 1.4s cubic-bezier(0.4,0,1,1) forwards;}
 
-/* Media query cho màn hình nhỏ */
+/* Tinh chỉnh cho màn hình nhỏ */
 @media (max-width: 768px) {
-  .book-container { height: 90vh; width: 95vw; border-radius: 10px; }
-  .inner-right { padding: 6vw 5vw; }
-  .message p { font-size: 3.8vw; }
-  .inner-right h2 { font-size: 6vw; }
-  .front-title { font-size: 8vw; }
-  .decor-icon { font-size: 15vw; }
-  .hat-wrapper { top:-10vw; right:-6vw; width:18vw; }
+  .scene { padding:1vw; }
+  .book-container { height:92vh; width:96vw; border-radius:10px; }
+  .inner-right { padding:8vw 6vw; }
+  .message p { font-size:4.2vw; margin-bottom:3.5vw; }
+  .inner-right h2 { font-size:7vw; margin-bottom:5vw; }
+  .front-title { font-size:9vw; }
+  .decor-icon { font-size:16vw; }
+  .hat-wrapper { top:-12vw; right:-8vw; width:22vw; }
+  .border-chars span { font-size:4vw; }
 }
 
-/* Các animation giữ nguyên */
+/* Animation giữ nguyên */
 @keyframes wobble{0%,100%{transform:rotateZ(-10deg) rotateX(15deg) translateY(0)}50%{transform:rotateZ(10deg) rotateX(-6deg) translateY(-7px)}}
 @keyframes fall{0%{transform:rotateZ(0) translateY(0);opacity:1}25%{transform:rotateZ(28deg) translateY(70px) translateX(30px)}65%{transform:rotateZ(58deg) translateY(280px) translateX(120px)}100%{transform:rotateZ(85deg) translateY(750px) translateX(200px);opacity:0}}
 
@@ -185,7 +189,7 @@ body{
             <p>Mong rằng em sẽ học thật giỏi và đạt được những điều mà mình mong muốn 🎓</p>
             <p>Luôn xinh xắn, tự tin và đáng yêu nhá 💖</p>
             <p>Chúc em snvv nghen🎉🎂</p>
-            <p style="margin-top:12px;font-family:'Pacifico',cursive;color:#cc2277;font-size:5vw;">Happy Birthday! 🥳</p>
+            <p style="margin-top:5vw;font-family:'Pacifico',cursive;color:#cc2277;font-size:6vw;">Happy Birthday! 🥳</p>
           </div>
         </div>
       </div>
@@ -194,7 +198,6 @@ body{
     <div class="cover-flap" id="coverFlap" onclick="toggleCard()">
 
       <div class="cover-front">
-        <!-- Icon lộn xộn to, responsive -->
         <span class="decor-icon" style="top:10%;left:15%;transform:rotate(-25deg);">🐱</span>
         <span class="decor-icon" style="top:25%;left:70%;transform:rotate(35deg);">🎂</span>
         <span class="decor-icon" style="top:60%;left:20%;transform:rotate(-15deg);">🎩</span>
@@ -214,7 +217,7 @@ body{
 
       <div class="hat-wrapper" id="hat">
         <svg width="100%" viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">
-          <!-- SVG mũ giữ nguyên, nhưng width 100% để responsive -->
+          <!-- SVG mũ giữ nguyên -->
           <defs>
             <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:#ff85c8"/>
@@ -250,7 +253,7 @@ body{
 </div>
 
 <script>
-// Script giữ nguyên (toggleCard, border chars, confetti, decor)
+// Script giữ nguyên như cũ
 let isOpen = false;
 
 function toggleCard() {
@@ -288,7 +291,7 @@ function toggleCard() {
   });
 })();
 
-// Confetti & decor (giữ nguyên)
+// Confetti & decor giữ nguyên
 const confColors=['#ff6bae','#ff2277','#ffcc00','#ff8800','#00ccff','#aa55ff','#22ddee','#f472b6','#84cc16','#ff4455','#44aaff','#ff99cc'];
 
 let sty = document.createElement('style');
